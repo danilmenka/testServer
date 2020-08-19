@@ -68,7 +68,6 @@ public class AsyncClass extends AsyncTask<String,String,String> {
         answerHTTP = getStringPOST(nameValuePairs);
 
         Log.e("ANSWET",answerHTTP);
-
         return null;
     }
     protected void onPostExecute(String result) {
