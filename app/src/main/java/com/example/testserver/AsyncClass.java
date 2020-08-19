@@ -68,6 +68,7 @@ public class AsyncClass extends AsyncTask<String,String,String> {
         answerHTTP = getStringPOST(nameValuePairs);
 
         Log.e("ANSWET",answerHTTP);
+
         return null;
     }
     protected void onPostExecute(String result) {
@@ -80,7 +81,7 @@ public class AsyncClass extends AsyncTask<String,String,String> {
         String answer = "ErrorPOST void ";
         try {
             HttpClient httpclient = new MyHttpClient(context);
-            HttpPost htopost = new HttpPost("http://u0881449.cp.regruhosting.ru/api.php");
+            HttpPost htopost = new HttpPost("https://u0881449.cp.regruhosting.ru/api.php");
         /*    if(request.hashCode()!="user".hashCode())
                 htopost.setHeader(new BasicHeader("X-AUTH-TOKEN",tokenString));
 */
