@@ -14,6 +14,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,22 +32,26 @@ import java.util.Locale;
 public class AsyncClass extends AsyncTask<String,String,String> {
     private ProgressDialog dialog;
     String model;
-    String time;
+    String time="43";
     String lang;
     Context context;
     String answerHTTP;
-    private List nameValuePairs;
+
+    public interface MyAsyncCallBack{
+        void doMyAsyncCallBack(String status);
+    }
+    public MyAsyncCallBack myAsyncCallBack;
+    public void registrationMyAsyncCallBack(MyAsyncCallBack myAsyncCallBack){
+        this.myAsyncCallBack = myAsyncCallBack;
+    }
+
 
     AsyncClass(Context context){
         this.context = context;
     }
-
-
-
-
     protected void onPreExecute() {
         dialog = new ProgressDialog(context);
-        dialog.setMessage("Doing something, please wait.");
+        dialog.setMessage("Загрузка, подождите, пожалуйста");
         dialog.show();
     }
 
@@ -54,19 +61,32 @@ public class AsyncClass extends AsyncTask<String,String,String> {
         String arr[] = model.split(" ", 2);
         model = arr[0];   //the
         lang = Locale.getDefault().getLanguage();
-      //  DateFormat df = new SimpleDateFormat("d m yyyy, HH:mm");
         DateFormat df = new SimpleDateFormat("yyyy-MM-d HH:mm");
         String date = df.format(Calendar.getInstance().getTime());
-        Log.e("NN",date);
 
         List nameValuePairs = new ArrayList(3);
-        nameValuePairs.add(new BasicNameValuePair("time",time));
+        nameValuePairs.add(new BasicNameValuePair("time",date));
         nameValuePairs.add(new BasicNameValuePair("language", lang));
         nameValuePairs.add(new BasicNameValuePair("model", model));
 
 
         answerHTTP = getStringPOST(nameValuePairs);
-
+        if (answerHTTP.equals("ErrorPOST void")){
+            answerHTTP = "OK";
+        }else {
+            JSONObject j1 = null;
+            try {
+                j1 = new JSONObject(answerHTTP);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                answerHTTP = j1.getString("status");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        myAsyncCallBack.doMyAsyncCallBack(answerHTTP);
         Log.e("ANSWET",answerHTTP);
 
         return null;
@@ -78,7 +98,7 @@ public class AsyncClass extends AsyncTask<String,String,String> {
 
     }
     public String getStringPOST( List name) {
-        String answer = "ErrorPOST void ";
+        String answer = "ErrorPOST void";
         try {
             HttpClient httpclient = new MyHttpClient(context);
             HttpPost htopost = new HttpPost("https://u0881449.cp.regruhosting.ru/api.php");
